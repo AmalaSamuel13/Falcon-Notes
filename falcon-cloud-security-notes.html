@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Falcon Cloud Security: my study notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F5F7;--fg:#14212B;--mut:#52646F;--line:#C5D2DA;--acc:#0F6E8C;--accbg:#DCEDF3;--warn:#8A5200;--warnbg:#FBEFD9;--ok:#1B6E45;--bad:#B3261E;--panel:#FFFFFF;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1920;--fg:#E3EDF2;--mut:#9DB1BC;--line:#2A3E49;--acc:#5CC1DE;--accbg:#12303B;--warn:#F0B866;--warnbg:#2E2414;--ok:#5FD08F;--bad:#FF8A80;--panel:#14252E;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1920;--fg:#E3EDF2;--mut:#9DB1BC;--line:#2A3E49;--acc:#5CC1DE;--accbg:#12303B;--warn:#F0B866;--warnbg:#2E2414;--ok:#5FD08F;--bad:#FF8A80;--panel:#14252E;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+main,header>div{max-width:760px;margin:0 auto;padding:0 16px}
+header{padding-top:20px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 4px}
+h2{font-size:1.35rem;margin:24px 0 8px}
+h3{font-size:1rem;margin:20px 0 6px}
+p{margin:0 0 12px;max-width:68ch}
+.sub{color:var(--mut)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:14px 0 4px}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+#ptxt{font-size:.9rem;color:var(--mut)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin-top:14px}
+nav div{display:flex;gap:2px;overflow-x:auto;max-width:760px;margin:0 auto;padding:0 8px}
+.tab{flex:none;background:none;border:0;border-bottom:3px solid transparent;color:var(--mut);font:inherit;padding:10px 10px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--acc);font-weight:700}
+button{font:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.idea{font-size:1.1rem}
+ul{padding-left:20px;margin:0 0 8px}li{margin:4px 0;max-width:68ch}
+.rem{border-left:4px solid var(--warn);background:var(--warnbg);padding:2px 14px 8px;margin:16px 0;border-radius:0 6px 6px 0}
+.rem h3{margin-top:12px}
+.lab{list-style:none;padding:0}.lab label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.lab input{margin-top:5px;width:18px;height:18px;accent-color:var(--acc)}
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 16px 16px;margin:16px 0}
+.tool label{display:block;margin:8px 0 4px;font-weight:700;font-size:.95rem}
+input[type=text],input[type=number],select{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.out{margin-top:12px;padding:10px 12px;background:var(--accbg);border-radius:6px;min-height:2.6em}
+.out b{font-size:1.15rem}
+.good{color:var(--ok)}.badc{color:var(--bad)}
+code{font:.9em ui-monospace,Menlo,Consolas,monospace;background:var(--accbg);padding:1px 5px;border-radius:4px}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;margin:12px 0}
+.q .a{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{background:var(--acc);color:var(--bg);border:0;border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:700}
+.btn.alt{background:none;color:var(--fg);border:1px solid var(--line)}
+.ph{margin:18px 0 4px;font-weight:700}
+.rd{list-style:none;padding:0}.rd li{padding:5px 10px;border-left:4px solid var(--line)}
+.rd .taught{border-color:var(--ok)}.rd .next{border-color:var(--acc);background:var(--accbg);font-weight:700}
+#theme{float:right;background:none;border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:4px 10px;cursor:pointer}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin:10px 0;padding:0 16px}
+summary{cursor:pointer;font-weight:700;padding:12px 0}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+ol.st{padding-left:22px}ol.st li{margin:8px 0}
+.nav{background:var(--accbg);padding:1px 6px;border-radius:4px;font-weight:700;font-size:.92em}
+.meta{font-size:.92rem;color:var(--mut);margin:8px 0}
+pre{background:var(--accbg);padding:10px 12px;border-radius:6px;overflow-x:auto;font:.88em/1.5 ui-monospace,Menlo,Consolas,monospace}
+footer{color:var(--mut);font-size:.85rem;padding:24px 0}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<header><div>
+<button id="theme" type="button">Light or dark</button>
+<h1>Falcon Cloud Security: my study notes</h1>
+<p class="sub">Topics 1 to 5 from my AWS lab account. Open Setup guide for click-by-click steps, tick lab steps as you finish them, try the live demos, then quiz yourself.</p>
+<div class="bar"><i id="fill"></i></div><div id="ptxt"></div>
+</div></header>
+<nav><div id="tabs" role="tablist"></div></nav>
+<main id="panes"></main>
+<main><footer>Demos are teaching models of the logic, not CrowdStrike’s source code. Progress is saved in this browser only.</footer></main>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let S={};try{S=JSON.parse(localStorage.getItem("fcs-notes")||"{}")}catch(e){}
+const put=()=>{try{localStorage.setItem("fcs-notes",JSON.stringify(S))}catch(e){}};
+const on=it=>it.k in S?S[it.k]:!!it.d;
+const li=a=>a.map(x=>"<li>"+x+"</li>").join("");
+
+const T=[
+{id:"t1",n:1,s:"Registration",h:"Account registration",
+idea:"Registration gives CrowdStrike a read-only “visitor pass” to your AWS account. Every other menu item depends on it.",
+how:["You deploy a CloudFormation stack, then paste the reader role ARN and root stack ARN back into Falcon.",
+"CrowdStrike’s own AWS role borrows your reader role, but only with the right ExternalId. Each session lasts at most 1 hour.",
+"Assets: a full scan about 2 hours after the last successful one. Real-time visibility adds CloudTrail events through EventBridge rules, so changes appear in about a minute.",
+"My stack: a root stack with 3 nested stacks (inventory, real-time, 1-click sensor), a region-discovery Lambda and StackSet roles. 9 resources, 2 outputs."],
+rem:["The reader role is AWS SecurityAudit plus CrowdStrike’s cspm_config policy. Only Get, List, Describe and Select actions, but a few can read content, so review them with clients.",
+"Real-time needs a multi-region CloudTrail trail. Identity protection repairs itself when real-time does.",
+"Change the integration only through Update stack, never by editing its roles by hand."],
+lab:[{k:"a1",s:"Registered the AWS account with CloudFormation",d:1},{k:"a2",s:"Repaired real-time visibility, all 4 columns Active",d:1},{k:"a3",s:"Read the stack’s resources and outputs",d:1},{k:"a4",s:"Read the role’s trust policy and permissions",d:1},{k:"a5",s:"New S3 bucket appeared in Falcon in about a minute",d:1},{k:"a6",s:"Found AssumeRole events in CloudTrail"}]},
+{id:"t2",n:2,s:"Assets dashboard",h:"Cloud assets dashboard",
+idea:"The wall of summary screens: counts, trends and top lists built from the inventory. Click a widget to land in the Assets explorer already filtered.",
+how:["Widgets: asset counts per cloud, instances, top assets with risks, top 10 asset types, count trend, top internet-exposed assets.",
+"Group by cloud provider, account, region, asset category or cloud group. Save a view to reuse a filter."],
+rem:["A sudden jump in the count trend can mean an unapproved deployment, or an attacker creating resources.",
+"Deleted assets stay visible for 90 days.",
+"Without real-time, numbers can lag by up to 2 hours."],
+lab:[{k:"b1",s:"Found my AWS total and grouped assets by region"},{k:"b2",s:"Saved a view"},{k:"b3",s:"Deleted a bucket and saw how Falcon marks it"}]},
+{id:"t3",n:3,s:"Assets explorer",h:"Assets explorer",
+idea:"The filing cabinet with a search engine. One entry per asset, merged from scans, real-time events, sensors and more.",
+how:["Filters include account, region, asset type, tags, service and IOM rules. Columns, saved views and CSV or JSON export are built in.",
+"The details panel has the asset graph, IOMs and IOAs, details and asset history.",
+"History: Version 1 at discovery, then a new version per change. The panel shows the 10 most recent."],
+rem:["One version can hold several events. Don’t count versions as events.",
+"History is kept 1 year, even for deleted assets.",
+"Managed means a sensor is installed. Unmanaged could have one but doesn’t. Unsupported can’t, such as an S3 bucket.",
+"Explorer counts won’t match the Exposure Management tables."],
+lab:[{k:"c1",s:"Created test buckets and an open-SSH security group",d:1},{k:"c2",s:"The open-SSH group raised a Medium IOM",d:1},{k:"c3",s:"Version 2 appeared about 2 minutes after enabling versioning",d:1},{k:"c4",s:"Exported a filtered CSV"},{k:"c5",s:"Compared two versions in the Compare tab"}]},
+{id:"t4",n:4,s:"Graph explorer",h:"Graph explorer",
+idea:"A corkboard that shows how assets connect. Nodes are assets, edges are relationships.",
+how:["Asset graph view maps the neighborhood of one asset. Graph explorer is a query tool across all assets.",
+"Queries follow FIND (the asset type), WHERE (conditions) and THAT (conditions on a connected asset). Results show as a graph or a table.",
+"Directly connected assets are 0 hops apart. Layouts: Sequential, Organic, Lens."],
+rem:["The graph shows only high or critical IOMs and IOAs, and only critical ExPRT vulnerabilities. No red dot doesn’t mean clean.",
+"Attack path analysis needs an Exposure Management subscription.",
+"Asset graph was greyed out on my bucket. Ask an admin to check role and subscription."],
+lab:[{k:"d1",s:"Asked an admin about the greyed-out asset graph"},{k:"d2",s:"Built a FIND and WHERE query in Graph explorer"},{k:"d3",s:"Optional: instance, role and bucket shown connected"}]},
+{id:"t5",n:5,s:"IOM rules",h:"IOM rules",
+idea:"A rule is a test applied to every asset of one type. Each failure on one asset is an IOM, an indicator of misconfiguration.",
+how:["Default rules come from CrowdStrike and can’t be edited. Duplicate one to get a custom rule.",
+"Custom rules use Rego with package crowdstrike. The result passes only for pass, admit, true or an empty string. Anything else fails.",
+"Statuses are Passed, Unresolved and Suppressed. Investigate with Event search, History and Remediation.",
+"New or changed IOMs appear several minutes after saving a custom rule."],
+rem:["Suppress keeps the asset assessed but out of the counts. Disabling a rule stops assessment, which creates a blind spot.",
+"An IOM says a setting is unsafe. Exposure says something reachable has it.",
+"Custom rules map only to custom compliance frameworks."],
+lab:[{k:"e1",s:"Found the rule behind my open-SSH finding (Medium)",d:1},{k:"e2",s:"Played Misconfiguration Bingo: predicted, then checked"},{k:"e3",s:"Fixed the security group and watched it become Passed"},{k:"e4",s:"Suppressed one IOM with a comment"},{k:"e5",s:"Created the S3 versioning custom rule"},{k:"e6",s:"Created a custom compliance framework"}]}
+];
+
+const Q=[
+["What does the ExternalId in the reader role’s trust policy protect against?","The confused-deputy problem. Someone else using CrowdStrike can’t trick CrowdStrike’s role into reaching your account without the value that belongs to your registration."],
+["How often does a scheduled scan run, and what does real-time change?","About 2 hours after the last successful scan. Real-time adds CloudTrail events, so changes appear in about a minute."],
+["Why did Identity protection turn Active after real-time was repaired?","Both rely on the same CloudTrail activity logs, so real-time is the prerequisite."],
+["How many hops apart are two directly connected assets?","Zero."],
+["Managed, unmanaged and unsupported: what is the difference?","Managed has a Falcon sensor. Unmanaged could run one but doesn’t. Unsupported can’t run one, such as an S3 bucket."],
+["Is one asset version the same as one event?","No. A version can hold several correlated events. The panel shows the 10 most recent versions, kept for 1 year."],
+["Suppress or disable a noisy rule?","Suppress. The asset is still assessed and tracked but not counted. Disabling stops assessment and creates a blind spot."],
+["Which Rego results count as a pass?","An empty string, pass, admit or true. Any other value, even Pass with a capital P, fails."],
+["Why does a rule fail every asset that lacks the field it checks?","The default is fail, and the pass condition never matches. Use skip for assets that should be excluded."],
+["IOM versus exposure?","An IOM means a setting is unsafe. Exposure means something is actually reachable. An unattached open-SSH group is an IOM with no real exposure."],
+["What do FIND, WHERE and THAT do in Graph explorer?","FIND picks the asset type, WHERE adds conditions on it, and THAT adds conditions on a connected asset."]
+];
+
+const R=[
+["A. Connect and see",[["1 Account registration","taught"],["2 Cloud assets dashboard","taught"],["3 Assets explorer","taught"],["4 Graph explorer","taught"]]],
+["B. Find problems",[["5 IOM rules","taught"],["6 IOM findings in depth","next"],["7 Cloud risks and risk rules"],["8 Attack path analysis"],["9 Cloud compliance"],["10 Suppression rules"],["11 Posture and identities dashboards"]]],
+["C. Scan for flaws",[["12 Agentless vulnerability scanning"],["13 Serverless functions"]]],
+["D. Containers and Kubernetes",[["14 Deployments dashboard"],["15 Kubernetes and containers inventory"],["16 Admission control policies"],["17 Image assessments"],["18 Kubernetes misconfigurations and compliance"],["19 Container detections and network"]]],
+["E. Catch attacks live",[["20 Cloud detection rules, IOA, detections dashboard"]]],
+["F. Shift-left and extras",[["21 IaC findings and rules"],["22 Application explorer"],["23 AI security"],["24 Activity dashboard"]]]
+];
+
+const topic=t=>`<section id="p-${t.id}" class="pane" hidden><h2>Topic ${t.n}: ${t.h}</h2><p class="idea">${t.idea}</p><h3>How it works</h3><ul>${li(t.how)}</ul><div class="rem"><h3>Remember</h3><ul>${li(t.rem)}</ul></div><h3>My lab</h3><ul class="lab">${t.lab.map(it=>`<li><label><input type="checkbox" data-k="${it.k}" ${on(it)?"checked":""}><span>${it.s}</span></label></li>`).join("")}</ul></section>`;
+
+const play=`<section id="p-play" class="pane" hidden><h2>Playground</h2><p class="sub">Three rules from my notes, running live.</p>
+<div class="tool"><h3>1. Internet exposure scope</h3><p class="sub">Enter allowed source ranges, separated by commas.</p>
+<label for="cidr">Source CIDRs</label><input id="cidr" type="text" value="0.0.0.0/0" autocomplete="off"><div class="out" id="cout" aria-live="polite"></div></div>
+<div class="tool"><h3>2. Compliance score and suppression</h3><p class="sub">Suppressing removes a failing asset from the count. Only fixing it passes.</p>
+<div class="row"><div><label for="pa">Passing assets</label><input id="pa" type="number" min="0" value="6000"></div><div><label for="fa">Failing assets</label><input id="fa" type="number" min="0" value="4000"></div><div><label for="sa">Failures suppressed</label><input id="sa" type="number" min="0" value="300"></div></div><div class="out" id="sout" aria-live="polite"></div></div>
+<div class="tool"><h3>3. Rego rule tester: S3 versioning</h3><p class="sub">Rule: <code>result := "pass" if input.versioning.status == "Enabled"</code>, default <code>"fail"</code>. The field path is an example, so use the real one from your Asset JSON.</p>
+<label for="rv">Bucket versioning value</label><select id="rv"><option value="Enabled">Enabled</option><option value="Suspended">Suspended</option><option value="enabled">enabled (wrong case)</option><option value="">Field missing</option></select><div class="out" id="rout" aria-live="polite"></div></div></section>`;
+
+const quiz=`<section id="p-quiz" class="pane" hidden><h2>Quiz yourself</h2><div class="q"><div class="sub" id="qn"></div><p><b id="qq"></b></p><div class="a" id="qa" hidden></div><div class="btns"><button class="btn" id="qshow" type="button">Show answer</button><button class="btn alt" id="qprev" type="button">Previous</button><button class="btn alt" id="qnext" type="button">Next</button></div></div></section>`;
+
+const road=`<section id="p-road" class="pane" hidden><h2>Roadmap</h2><p class="sub">Green is taught, blue is next.</p>${R.map(p=>`<div class="ph">${p[0]}</div><ul class="rd">${p[1].map(x=>`<li class="${x[1]||""}">${x[0]}</li>`).join("")}</ul>`).join("")}</section>`;
+
+const REGO=`package crowdstrike
+
+default result := "fail"
+
+# replace the path with the real one from your Asset JSON
+result := "pass" if {
+    input.versioning.status == "Enabled"
+}`;
+const G=[
+{h:"0. Before you start",need:"About 10 minutes. Use a sandbox AWS account, never production.",st:["In AWS, sign in as an IAM admin user with MFA. Avoid the root user for daily work.","Write down the 12-digit account ID from the account menu at the top right of the AWS console.","Confirm your Falcon role is Falcon Administrator, Cloud Security Manager or CSPM Manager. Ask your Falcon admin if unsure.","If your cloud only allows API calls from trusted IPs, allowlist the CrowdStrike addresses for your region (table near the start of the Cloud Security documentation).","Pick one AWS region for the labs, note it, and set an AWS billing alert."],ok:"You have the account ID, an admin login and the right Falcon role.",bad:"No permission to create stacks or roles: ask your AWS admin for CloudFormation and IAM rights."},
+{h:"1. Register an AWS account",need:"About 20 minutes. Needs step 0.",st:["In Falcon open [[Cloud security > Settings > Integrations > Account registration]] and start a new AWS registration.","Registration parameters: enter the account ID and choose CloudFormation.","Features: keep IOM assessments, turn on Real-time visibility and detection. Leave DSPM and vulnerability scanning off for now.","Skip advanced settings. For CrowdStrike API credentials, create or choose the API client the wizard offers and keep its secret private.","On Deploy stack click [[Open CloudFormation template]]. Do not use the Infrastructure Composer link beside it.","In AWS check the account and region, paste the secret into [[Falcon API Client Secret]], tick the IAM acknowledgement and click [[Create stack]].","Wait for [[CREATE_COMPLETE]] on the Events tab, then open [[Outputs]] and copy ReaderRoleArn and RootStackArn.","Paste both ARNs into Falcon and finish the wizard."],ok:"The Account registration table shows Assets: Active and a recent Last checked time.",bad:"ROLLBACK_COMPLETE or CREATE_FAILED: open Events, find the first failed row and read its Status reason. Landed on Infrastructure Composer: close that tab and use the grey button."},
+{h:"2. Enable or repair real-time visibility",need:"About 20 minutes. Needs a registered account.",st:["In AWS open [[CloudTrail > Trails]]. Confirm Multi-region trail: Yes, logging On, and management events for Read and Write. If there is no trail, click [[Create trail]], name it, let it create an S3 bucket and keep management events on.","In Falcon open [[Cloud security > Settings > Integrations > Account registration]] and click the red Inactive link in the Real-time visibility column. Alternative: [[Connectors > Cloud connectors > Cloud connections > AWS]], then Set up in that column.","Click [[Open stack in AWS]], then [[Update]].","In Falcon click [[Copy S3 URL]]. In AWS choose [[Replace existing template]] and paste it.","Set [[EnableRealtimeVisibilityAndDetection = true]] and [[UseExistingCloudTrail = true]]. Leave other parameters alone.","Click Next, tick the IAM acknowledgement and click [[Submit]].","Wait for [[UPDATE_COMPLETE]], return to Falcon and click [[Validate]]."],ok:"Real-time visibility and Identity protection show Active. A new empty S3 bucket appears in the Assets explorer in about a minute.",bad:"Still Inactive: re-check the trail is multi-region and logging. A failed update: read the first failed Events row. Change one feature per update."},
+{h:"3. Review what was built",need:"About 20 minutes. Use this when a client asks “is it safe?”",st:["In AWS open [[CloudFormation > Stacks > CrowdStrike-Integration]]. Read the Resources (9) and Outputs (2) tabs.","Open [[IAM > Roles]], search CSPMReader, and on Permissions expand SecurityAudit and cspm_config. Check the actions are Get, List, Describe or Select.","On [[Trust relationships]] confirm one CrowdStrike role as Principal and an sts:ExternalId condition. Maximum session is 1 hour.","In the real-time nested stack and StackSet, find the two EventBridge rules (ioa and readonly).","Open [[CloudTrail > Event history]], filter Event name = AssumeRole and open one event to see CrowdStrike using the role."],ok:"You can explain who can use the role, what it can do, and where its use is logged.",bad:"An action that writes or deletes would be unexpected: stop and raise it with CrowdStrike support."},
+{h:"4. Explore assets and history",need:"About 30 minutes.",st:["Open [[Cloud security > Dashboards > Operations > Cloud assets]] and click the AWS number to land in the explorer.","Go to [[Cloud security > Assets > Explorer > Assets explorer]]. Use Group by (Region, Asset category) and the filter bar (Asset name, Asset type, Cloud asset tags).","Click an asset, then [[Asset history]]. Click [[View asset data]] for Asset JSON and Compare to last version.","Enable versioning on a bucket in AWS. Version 2 appears in about 2 minutes with real-time on.","Use Configure table columns, then [[Save view]].","To export, apply filters, click [[Export]] in the toolbar above the table, choose CSV or JSON, then click the download notification. For a custom report choose New export or template and save it."],ok:"You can find an asset, see who changed it, and export the list.",bad:"Asset missing: wait a few minutes, check the account filter, and confirm Assets is Active in Account registration."},
+{h:"5. Graph explorer",need:"About 20 minutes.",st:["From an asset’s details panel click [[See full asset graph]]. If greyed out, the asset may have no connections, or your role or subscription may not include it. Ask an admin.","Open [[Cloud security > Assets > Graph explorer]]. Build a query: FIND an asset type, add WHERE conditions, and optionally a relationship (THAT).","Switch between graph and table results and save the query if offered.","On a graph: hover for info, click for details, Load more for neighbors, Select as central entity to re-center, and try the Sequential, Organic and Lens layouts."],ok:"A query returns the assets that match your combination of conditions.",bad:"Feature missing or greyed: check your Falcon roles and subscription."},
+{h:"6. Investigate and tune IOMs",need:"About 30 minutes.",st:["Open [[Cloud security > Posture and Compliance > Cloud security posture > Indicators of Misconfiguration (IOM)]] and click a finding.","Read Rule name, Asset ID, Event search (who changed it), History, and the Alert logic and Remediation tab.","To read the rule, open [[Cloud security > Rules and Policies > Rules > Indicators of Misconfiguration (IOM) rules]] and click it.","Fix the setting in AWS, for example limit SSH to your own IP as a /32. The status becomes Passed at the next assessment or real-time event.","To accept a risk, suppress the IOM with a comment. For many at once use [[Cloud security > Rules and Policies > Management > Suppression rules]]. Do not disable a default rule just to cut noise."],ok:"Status moves Unresolved to Passed (fixed) or Suppressed (accepted), and History records it.",bad:"IOM page looks different from this guide: earlier severity or policy changes switch you to the legacy page."},
+{h:"7. Create a custom IOM rule (S3 versioning)",need:"About 40 minutes. Custom rules map only to custom frameworks.",st:["Create a framework: [[Cloud security > Posture and Compliance > Compliance > Cloud compliance > Create Framework]]. Name it, add one section and one requirement, click Save.","Open [[Cloud security > Rules and Policies > Rules > Indicators of Misconfiguration (IOM) rules > Create rule]].","Enter name, severity (Medium), asset type S3 Bucket, alert logic and remediation text (informational only), then Next.","Choose to write the rule manually and paste the Rego below. Replace the field path with the real one from your bucket’s Asset JSON, copying the case exactly.","Click Test. The JSON tab uses sample data and the Environment tab uses your real buckets.","Save, click Next, assign the rule to your custom requirement and click Done.","Wait several minutes, then open the IOM page. Create a bucket (fails), enable versioning (Passed), suspend versioning (fails again)."],code:REGO,ok:"History shows three status changes and Event search shows the PutBucketVersioning call.",bad:"Everything fails: the path or its case is wrong. Wizard blocks you: map the rule to a custom framework."},
+{h:"8. Clean up",need:"About 10 minutes. Do this after every lab.",st:["Delete test buckets (empty them first), extra security groups and test IAM users. Terminate any instance.","Keep the CrowdStrike-Integration stack and its roles. Deleting them breaks the integration.","Check AWS Billing in a few days."],ok:"Only the CrowdStrike stack and your normal resources remain.",bad:"Unsure what to delete: look for resources named lab or crwd-test."}
+];
+const gd=s=>s.replace(/\[\[(.+?)\]\]/g,'<span class="nav">$1</span>');
+const guide=`<section id="p-guide" class="pane" hidden><h2>Setup guide</h2><p class="sub">Click-by-click steps. Highlighted text is a menu path or a value to enter. Button names may differ slightly in your console.</p>${G.map((g,i)=>`<details${i?"":" open"}><summary>${g.h}</summary><p class="meta">${g.need}</p><ol class="st">${g.st.map(x=>"<li>"+gd(x)+"</li>").join("")}</ol>${g.code?"<pre>"+g.code+"</pre>":""}<p class="meta"><b>Check:</b> ${g.ok}</p><p class="meta"><b>If it fails:</b> ${g.bad}</p></details>`).join("")}</section>`;
+$("#panes").innerHTML=T.map(topic).join("")+guide+play+quiz+road;
+const tabs=[...T.map(t=>({id:t.id,l:t.n+" "+t.s})),{id:"guide",l:"Setup guide"},{id:"play",l:"Playground"},{id:"quiz",l:"Quiz"},{id:"road",l:"Roadmap"}];
+$("#tabs").innerHTML=tabs.map(t=>`<button class="tab" role="tab" type="button" data-id="${t.id}">${t.l}</button>`).join("");
+function show(id){$$(".pane").forEach(p=>p.hidden=p.id!=="p-"+id);$$(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.id===id?"true":"false"));window.scrollTo(0,0)}
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(b)show(b.dataset.id)});
+function prog(){const c=$$("input[data-k]"),n=c.filter(x=>x.checked).length;$("#fill").style.width=(100*n/c.length)+"%";$("#ptxt").textContent=n+" of "+c.length+" lab steps done"}
+document.addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k){S[k]=e.target.checked;put();prog()}});
+
+function scope(txt){let widest=0,glob=false,any=false;
+for(const raw of txt.split(",")){const x=raw.trim();if(!x)continue;any=true;
+if(x==="::/0"){glob=true;continue}
+const m=x.match(/^(\d{1,3}(?:\.\d{1,3}){3})\/(\d{1,2})$/);if(!m||+m[2]>32||m[1].split(".").some(o=>+o>255))return null;
+const p=+m[2];if(p===0)glob=true;widest=Math.max(widest,Math.pow(2,32-p))}
+if(!any)return null;
+if(glob)return["Global","Anyone on the internet can reach it."];
+if(widest>=65536)return["Broad","65,536 or more addresses (a /16 or wider)."];
+if(widest>=9)return["Restricted","9 to 65,535 addresses."];
+return["Specific","8 addresses or fewer (a /29 or narrower)."]}
+function doScope(){const r=scope($("#cidr").value),o=$("#cout");
+o.innerHTML=r?`<b>${r[0]}</b><br>${r[1]}`:"Enter valid ranges such as 203.0.113.10/32, 10.0.0.0/16.";}
+function doScore(){const p=Math.max(0,+$("#pa").value||0),f=Math.max(0,+$("#fa").value||0),s=Math.min(f,Math.max(0,+$("#sa").value||0));
+const a=p+f-s,base=p+f,sc=a?Math.floor(100*p/a):null,b=base?Math.floor(100*p/base):null;
+$("#sout").innerHTML=sc===null?"Not assessed.":`<b>${sc}%</b> with suppression (${p} ÷ ${a}, rounded down)<br>Without suppression: ${b}%. Suppressing moved the score by ${sc-b} points and fixed nothing.`}
+function doRego(){const v=$("#rv").value,pass=v==="Enabled",o=$("#rout");
+o.innerHTML=`<b class="${pass?"good":"badc"}">${pass?"pass":"fail"}</b><br>`+(pass?"The pass condition matched exactly.":v===""?"The field is missing, so the pass line never matches and the default fail applies.":"The comparison is case sensitive and exact, so this value doesn’t match “Enabled”.")}
+["cidr"].forEach(i=>$("#"+i).addEventListener("input",doScope));["pa","fa","sa"].forEach(i=>$("#"+i).addEventListener("input",doScore));$("#rv").addEventListener("change",doRego);
+
+let qi=0,sh=false;
+function qz(){$("#qn").textContent="Question "+(qi+1)+" of "+Q.length;$("#qq").textContent=Q[qi][0];$("#qa").textContent=Q[qi][1];$("#qa").hidden=!sh;$("#qshow").textContent=sh?"Hide answer":"Show answer"}
+$("#qshow").onclick=()=>{sh=!sh;qz()};$("#qnext").onclick=()=>{qi=(qi+1)%Q.length;sh=false;qz()};$("#qprev").onclick=()=>{qi=(qi+Q.length-1)%Q.length;sh=false;qz()};
+$("#theme").onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;d.dataset.theme=dark?"light":"dark"};
+doScope();doScore();doRego();qz();prog();show("t1");
+</script>
+</body>
+</html>
